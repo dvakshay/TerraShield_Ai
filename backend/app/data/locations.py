@@ -1,0 +1,72 @@
+locations = [
+    {
+        "id": "LOC001",
+        "village": "Joshimath",
+        "district": "Chamoli",
+        "state": "Uttarakhand",
+        "latitude": 30.555,
+        "longitude": 79.565,
+        "rainfall_intensity": 85,
+        "rainfall_24h": 170,
+        "soil_moisture": 82,
+        "slope": 38,
+        "historical_landslides": 6,
+        "historical_floods": 4
+    },
+    {
+        "id": "LOC002",
+        "village": "Rudraprayag",
+        "district": "Rudraprayag",
+        "state": "Uttarakhand",
+        "latitude": 30.284,
+        "longitude": 78.981,
+        "rainfall_intensity": 62,
+        "rainfall_24h": 125,
+        "soil_moisture": 67,
+        "slope": 31,
+        "historical_landslides": 4,
+        "historical_floods": 5
+    },
+    {
+        "id": "LOC003",
+        "village": "Ukhimath",
+        "district": "Rudraprayag",
+        "state": "Uttarakhand",
+        "latitude": 30.520,
+        "longitude": 79.200,
+        "rainfall_intensity": 42,
+        "rainfall_24h": 88,
+        "soil_moisture": 54,
+        "slope": 25,
+        "historical_landslides": 2,
+        "historical_floods": 2
+    },
+    {
+        "id": "LOC004",
+        "village": "Pithoragarh",
+        "district": "Pithoragarh",
+        "state": "Uttarakhand",
+        "latitude": 29.582,
+        "longitude": 80.218,
+        "rainfall_intensity": 28,
+        "rainfall_24h": 55,
+        "soil_moisture": 43,
+        "slope": 18,
+        "historical_landslides": 1,
+        "historical_floods": 1
+    },
+    {
+        "id": "LOC005",
+        "village": "Badrinath",
+        "district": "Chamoli",
+        "state": "Uttarakhand",
+        "latitude": 30.743,
+        "longitude": 79.493,
+        "rainfall_intensity": 72,
+        "rainfall_24h": 148,
+        "soil_moisture": 76,
+        "slope": 42,
+        "historical_landslides": 5,
+        "historical_floods": 3
+    }
+]
