@@ -4,6 +4,8 @@ from app.data.locations import locations
 
 from app.models.risk import RiskInput, RiskResponse
 
+from app.services.sensor_service import generate_sensor_reading
+
 from app.services.risk_engine import (
     calculate_landslide_risk,
     calculate_flood_risk,
@@ -163,6 +165,77 @@ def get_location(location_id: str):
                     get_recommended_action(
                         overall_risk
                     )
+            }
+
+    return {
+        "error": "Location not found"
+    }
+
+@app.get("/sensors/{location_id}")
+def get_sensor_reading(location_id: str):
+
+    for location in locations:
+
+        if location["id"] == location_id:
+
+            reading = generate_sensor_reading(location)
+
+            return reading
+
+    return {
+        "error": "Location not found"
+    }
+
+@app.get("/monitoring/{location_id}")
+def get_monitoring_data(location_id: str):
+
+    for location in locations:
+
+        if location["id"] == location_id:
+
+            sensor = generate_sensor_reading(location)
+
+            landslide_risk = calculate_landslide_risk(
+                sensor["rainfall_intensity"],
+                location["rainfall_24h"],
+                sensor["soil_moisture"],
+                sensor["slope"],
+                location["historical_landslides"]
+            )
+
+            flood_risk = calculate_flood_risk(
+                sensor["rainfall_intensity"],
+                location["rainfall_24h"],
+                sensor["soil_moisture"],
+                location["historical_floods"]
+            )
+
+            overall_risk = calculate_overall_risk(
+                landslide_risk,
+                flood_risk
+            )
+
+            return {
+                "location": {
+                    "id": location["id"],
+                    "village": location["village"],
+                    "district": location["district"],
+                    "state": location["state"],
+                    "latitude": location["latitude"],
+                    "longitude": location["longitude"]
+                },
+
+                "sensors": sensor,
+
+                "risk": {
+                    "landslide": landslide_risk,
+                    "flood": flood_risk,
+                    "overall": overall_risk,
+                    "level": classify_risk(overall_risk)
+                },
+
+                "recommended_action":
+                    get_recommended_action(overall_risk)
             }
 
     return {
