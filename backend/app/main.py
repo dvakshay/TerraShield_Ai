@@ -1,9 +1,8 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.data.locations import locations
-
 from app.models.risk import RiskInput, RiskResponse
-
 from app.services.sensor_service import generate_sensor_reading
 
 from app.services.risk_engine import (
@@ -11,7 +10,7 @@ from app.services.risk_engine import (
     calculate_flood_risk,
     calculate_overall_risk,
     classify_risk,
-    get_recommended_action
+    get_recommended_action,
 )
 
 
@@ -22,8 +21,29 @@ from app.services.risk_engine import (
 app = FastAPI(
     title="TerraShield AI",
     description="Hyper-local Landslide and Flash-Flood Early Warning System",
-    version="0.1.0"
+    version="0.1.0",
 )
+
+
+# --------------------------------------------------
+# CORS
+# --------------------------------------------------
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "http://192.168.81.230:5173",
+        "http://192.168.81.230:5174",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 
 # --------------------------------------------------
@@ -35,7 +55,7 @@ def root():
     return {
         "system": "TerraShield AI",
         "status": "online",
-        "message": "Disaster intelligence system operational"
+        "message": "Disaster intelligence system operational",
     }
 
 
@@ -46,7 +66,7 @@ def root():
 @app.get("/health")
 def health():
     return {
-        "status": "healthy"
+        "status": "healthy",
     }
 
 
@@ -62,27 +82,24 @@ def predict_risk(data: RiskInput):
         data.rainfall_24h,
         data.soil_moisture,
         data.slope,
-        data.historical_landslides
+        data.historical_landslides,
     )
 
     flood_risk = calculate_flood_risk(
         data.rainfall_intensity,
         data.rainfall_24h,
         data.soil_moisture,
-        data.historical_floods
+        data.historical_floods,
     )
 
     overall_risk = calculate_overall_risk(
         landslide_risk,
-        flood_risk
+        flood_risk,
     )
 
     return RiskResponse(
-
         landslide_risk=landslide_risk,
-
         flood_risk=flood_risk,
-
         overall_risk=overall_risk,
 
         landslide_level=classify_risk(
@@ -99,7 +116,7 @@ def predict_risk(data: RiskInput):
 
         recommended_action=get_recommended_action(
             overall_risk
-        )
+        ),
     )
 
 
@@ -112,7 +129,7 @@ def get_locations():
 
     return {
         "count": len(locations),
-        "locations": locations
+        "locations": locations,
     }
 
 
@@ -132,23 +149,22 @@ def get_location(location_id: str):
                 location["rainfall_24h"],
                 location["soil_moisture"],
                 location["slope"],
-                location["historical_landslides"]
+                location["historical_landslides"],
             )
 
             flood_risk = calculate_flood_risk(
                 location["rainfall_intensity"],
                 location["rainfall_24h"],
                 location["soil_moisture"],
-                location["historical_floods"]
+                location["historical_floods"],
             )
 
             overall_risk = calculate_overall_risk(
                 landslide_risk,
-                flood_risk
+                flood_risk,
             )
 
             return {
-
                 **location,
 
                 "landslide_risk": landslide_risk,
@@ -161,15 +177,19 @@ def get_location(location_id: str):
                     overall_risk
                 ),
 
-                "recommended_action":
-                    get_recommended_action(
-                        overall_risk
-                    )
+                "recommended_action": get_recommended_action(
+                    overall_risk
+                ),
             }
 
     return {
-        "error": "Location not found"
+        "error": "Location not found",
     }
+
+
+# --------------------------------------------------
+# SENSOR READING
+# --------------------------------------------------
 
 @app.get("/sensors/{location_id}")
 def get_sensor_reading(location_id: str):
@@ -183,8 +203,13 @@ def get_sensor_reading(location_id: str):
             return reading
 
     return {
-        "error": "Location not found"
+        "error": "Location not found",
     }
+
+
+# --------------------------------------------------
+# LIVE MONITORING
+# --------------------------------------------------
 
 @app.get("/monitoring/{location_id}")
 def get_monitoring_data(location_id: str):
@@ -193,26 +218,30 @@ def get_monitoring_data(location_id: str):
 
         if location["id"] == location_id:
 
+            # Generate simulated IoT sensor reading
             sensor = generate_sensor_reading(location)
 
+            # Calculate landslide risk
             landslide_risk = calculate_landslide_risk(
                 sensor["rainfall_intensity"],
                 location["rainfall_24h"],
                 sensor["soil_moisture"],
                 sensor["slope"],
-                location["historical_landslides"]
+                location["historical_landslides"],
             )
 
+            # Calculate flood risk
             flood_risk = calculate_flood_risk(
                 sensor["rainfall_intensity"],
                 location["rainfall_24h"],
                 sensor["soil_moisture"],
-                location["historical_floods"]
+                location["historical_floods"],
             )
 
+            # Calculate combined risk
             overall_risk = calculate_overall_risk(
                 landslide_risk,
-                flood_risk
+                flood_risk,
             )
 
             return {
@@ -222,7 +251,7 @@ def get_monitoring_data(location_id: str):
                     "district": location["district"],
                     "state": location["state"],
                     "latitude": location["latitude"],
-                    "longitude": location["longitude"]
+                    "longitude": location["longitude"],
                 },
 
                 "sensors": sensor,
@@ -231,13 +260,16 @@ def get_monitoring_data(location_id: str):
                     "landslide": landslide_risk,
                     "flood": flood_risk,
                     "overall": overall_risk,
-                    "level": classify_risk(overall_risk)
+                    "level": classify_risk(
+                        overall_risk
+                    ),
                 },
 
-                "recommended_action":
-                    get_recommended_action(overall_risk)
+                "recommended_action": get_recommended_action(
+                    overall_risk
+                ),
             }
 
     return {
-        "error": "Location not found"
+        "error": "Location not found",
     }
