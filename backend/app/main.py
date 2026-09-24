@@ -32,18 +32,23 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        # Local development
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:5174",
         "http://127.0.0.1:5174",
+
+        # Local network / mobile testing
         "http://192.168.81.230:5173",
         "http://192.168.81.230:5174",
+
+        # Deployed frontend
+        "https://terrashield-ai-1.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 
 # --------------------------------------------------
