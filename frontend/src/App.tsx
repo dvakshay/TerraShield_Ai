@@ -22,7 +22,7 @@ import {
 
 import RiskMap from "./components/maps/RiskMap";
 import AIForecast from "./components/forecast/AIForecast";
-import Login from "./components/Login";
+import Login from "./components/login";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
