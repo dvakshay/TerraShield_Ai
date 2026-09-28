@@ -22,6 +22,7 @@ import {
 
 import RiskMap from "./components/maps/RiskMap";
 import AIForecast from "./components/forecast/AIForecast";
+import Login from "./components/Login";
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
@@ -180,6 +181,9 @@ function getAlertIcon(level: string) {
 }
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem("terrashield-authenticated") === "true";
+  });
   const [locations, setLocations] = useState<Location[]>([]);
   const [monitoring, setMonitoring] = useState<MonitoringData[]>([]);
   const [selectedLocation, setSelectedLocation] =
@@ -293,6 +297,18 @@ function App() {
 
     setMobileMenuOpen(false);
   };
+
+  if (!isAuthenticated) {
+    return (
+      <Login
+        onLogin={() => {
+          localStorage.setItem("terrashield-authenticated", "true");
+          setIsAuthenticated(true);
+        }}
+      />
+    );
+  }
+
 
   return (
     <div className="min-h-screen bg-[#07111f] text-white">
